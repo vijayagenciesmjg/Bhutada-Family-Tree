@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Bhutada Family Tree</title>
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+</head>
+
+<body>
+
+    <!-- ==========================================
+         Header
+    ========================================== -->
+
+    <header id="appHeader">
+
+        <div id="logoArea">
+
+            <h1>🌳 Bhutada Family Tree</h1>
+
+            <p>
+                Five Generation Interactive Family Tree
+            </p>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ==========================================
+         Toolbar
+    ========================================== -->
+
+    <section id="toolbar">
+
+        <button id="btnExpandAll">
+
+            Expand All
+
+        </button>
+
+        <button id="btnCollapseAll">
+
+            Collapse All
+
+        </button>
+
+        <button id="btnFitScreen">
+
+            Fit to Screen
+
+        </button>
+
+        <button id="btnResetZoom">
+
+            Reset Zoom
+
+        </button>
+
+        <input
+            type="text"
+            id="txtSearch"
+            placeholder="Search Name / Member ID / Contact">
+
+    </section>
+
+
+
+    <!-- ==========================================
+         Tree
+    ========================================== -->
+
+    <main id="treeViewport">
+
+        <div id="treeWrapper">
+
+            <div id="treeCanvas">
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- ==========================================
+         Member Details Popup
+    ========================================== -->
+
+    <div id="memberOverlay">
+
+        <div id="memberPopup">
+
+            <div id="popupHeader">
+
+                <h2>
+
+                    Member Details
+
+                </h2>
+
+                <button id="btnClosePopup">
+
+                    ✕
+
+                </button>
+
+            </div>
+
+            <div id="popupBody">
+
+                <table id="memberTable">
+
+                    <tr>
+
+                        <td>Name</td>
+
+                        <td id="popName"></td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Member ID</td>
+
+                        <td id="popMemberId"></td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Role</td>
+
+                        <td id="popRole"></td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Generation</td>
+
+                        <td id="popGeneration"></td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Contact</td>
+
+                        <td id="popContact"></td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Date of Birth</td>
+
+                        <td id="popDOB"></td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Anniversary</td>
+
+                        <td id="popDOA"></td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Demise</td>
+
+                        <td id="popDOD"></td>
+
+                    </tr>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==========================================
+         Status Bar
+    ========================================== -->
+
+    <footer id="statusBar">
+
+        Ready
+
+    </footer>
+
+
+
+    <!-- ==========================================
+         Scripts
+    ========================================== -->
+
+    <script src="js/utils.js"></script>
+
+    <script src="js/data.js"></script>
+
+    <script src="js/tree.js"></script>
+
+    <script src="js/renderer.js"></script>
+
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>
