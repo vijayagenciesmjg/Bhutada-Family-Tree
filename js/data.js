@@ -46,13 +46,7 @@ function validateFamilyData(family){
 
         if(!person.memberId){
 
-            console.warn(
-
-                "Missing Member ID at row",
-
-                index+1
-
-            );
+            console.warn("Missing Member ID at row", index+1);
 
         }
 

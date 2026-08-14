@@ -29,9 +29,6 @@ function renderApplication() {
 
 }
 
-/* ============================================
-   Create Tree
-============================================ */
 
 /* ============================================
    Create Tree
@@ -71,9 +68,6 @@ function createTree(member) {
     return node;
 
 }
-/* ============================================
-   Family Unit
-============================================ */
 
 /* ============================================
    Family Unit
@@ -132,6 +126,101 @@ function createFamilyUnit(member) {
 
 }
 
+function findPersonCard(memberId){
+
+    if(!memberId)
+        return null;
+
+
+    return document.querySelector(
+        `.personCard[data-member-id="${memberId}"]`
+    );
+
+}
+
+function highlightFamilyContext(person){
+
+    /* Remove previous relationship highlighting */
+
+    document
+        .querySelectorAll(
+            ".personCard.relationship-spouse, " +
+            ".personCard.relationship-parent, " +
+            ".personCard.relationship-child"
+        )
+        .forEach(card => {
+
+            card.classList.remove(
+                "relationship-spouse",
+                "relationship-parent",
+                "relationship-child"
+            );
+
+        });
+
+
+    if(!person)
+        return;
+
+
+    /* Highlight Spouse */
+
+    if(person.spouse){
+
+        const spouseCard =
+            findPersonCard(person.spouse.memberId);
+
+        if(spouseCard){
+
+            spouseCard.classList.add(
+                "relationship-spouse"
+            );
+
+        }
+
+    }
+
+
+    /* Highlight Parent */
+
+    if(person.parent){
+
+        const parentCard =
+            findPersonCard(person.parent.memberId);
+
+        if(parentCard){
+
+            parentCard.classList.add(
+                "relationship-parent"
+            );
+
+        }
+
+    }
+
+
+    /* Highlight Children */
+
+    if(Array.isArray(person.children)){
+
+        person.children.forEach(child => {
+
+            const childCard =
+                findPersonCard(child.memberId);
+
+            if(childCard){
+
+                childCard.classList.add(
+                    "relationship-child"
+                );
+
+            }
+
+        });
+
+    }
+
+}
 
 /* ============================================
    Person Card
@@ -160,6 +249,8 @@ function createPersonCard(person, isMember){
 
     card.dataset.role = person.role || "";
 
+    card.dataset.gender = person.gender || "";
+
     card.dataset.generation = person.generation || "";
 
     card.dataset.contact = person.contact || "";
@@ -187,26 +278,60 @@ function createPersonCard(person, isMember){
 
 
     /* ==========================================
-       Click Event
-    ========================================== */
+   Click Event
+========================================== */
 
-    card.addEventListener(
+card.addEventListener(
 
-        "click",
+    "click",
 
-        function(e){
+    function(e){
 
-            e.stopPropagation();
+        e.stopPropagation();
 
-            if(typeof showMemberDetails === "function"){
 
-                showMemberDetails(this);
+        /* Remove previous selection */
 
-            }
+        document
+            .querySelectorAll(".personCard.selected")
+            .forEach(card => {
+
+                card.classList.remove("selected");
+
+            });
+
+
+        /* Highlight current member */
+
+        this.classList.add("selected");
+
+
+        /* Find selected person in application data */
+
+        const person =
+            App.family.find(
+                item =>
+                    item.memberId ===
+                    this.dataset.memberId
+            );
+
+
+        /* Highlight immediate family */
+
+        highlightFamilyContext(person);
+
+
+        /* Show member details */
+
+        if(typeof showMemberDetails === "function"){
+
+            showMemberDetails(this);
 
         }
 
-    );
+    }
+
+);
 
 
 

@@ -178,56 +178,31 @@ function initializeToolbar(){
 
         );
 
-    /* ============================================
-   Popup
+/* ============================================
+   Family Details Panel
 ============================================ */
 
 document
     .getElementById("btnClosePopup")
     .addEventListener(
-
         "click",
-
         closeMemberDetails
-
     );
 
-document
-    .getElementById("memberOverlay")
-    .addEventListener(
-
-        "click",
-
-        function(e){
-
-            if(e.target.id==="memberOverlay"){
-
-                closeMemberDetails();
-
-            }
-
-        }
-
-    );
 
 document.addEventListener(
-
     "keydown",
-
     function(e){
 
-        if(e.key==="Escape"){
+        if(e.key === "Escape"){
 
             closeMemberDetails();
 
         }
 
     }
-
 );
-
 }
-
 
 
 /* ============================================
@@ -422,41 +397,137 @@ function searchMember(e){
 
 function showMemberDetails(card){
 
+    document.getElementById("popupMemberName").textContent =
+        card.dataset.name || "Member Details";
+
+
     document.getElementById("popName").textContent =
         card.dataset.name || "";
+
 
     document.getElementById("popMemberId").textContent =
         card.dataset.memberId || "";
 
+
     document.getElementById("popRole").textContent =
         card.dataset.role || "";
+
+
+    document.getElementById("popGender").textContent =
+        card.dataset.gender || "";
+
+
+    const memberId =
+        card.dataset.memberId || "";
+
+
+    const person =
+        App.family.find(
+            item => item.memberId === memberId
+        );
+
+
+    const spouseId =
+        memberId.endsWith("M")
+            ? memberId.slice(0, -1) + "S"
+            : memberId.endsWith("S")
+            ? memberId.slice(0, -1) + "M"
+            : "";
+
+
+    const spouse =
+        App.family.find(
+            item => item.memberId === spouseId
+        );
+
+
+    const parentName =
+        person && person.parent
+        ? person.parent.name
+        : "";
+
+
+    document.getElementById("popParents").textContent =
+        parentName || "-";
+
+
+    const childrenNames =
+        person && Array.isArray(person.children)
+        ? person.children.map(
+            child => child.name
+        )
+        : [];
+
+
+    document.getElementById("popChildren").textContent =
+        childrenNames.length
+            ? childrenNames.join(", ")
+            : "-";
+
+
+    document.getElementById("popSpouse").textContent =
+        spouse
+            ? spouse.name
+            : "-";
+
 
     document.getElementById("popGeneration").textContent =
         card.dataset.generation || "";
 
+
     document.getElementById("popContact").textContent =
         card.dataset.contact || "";
+
 
     document.getElementById("popDOB").textContent =
         card.dataset.dob || "-";
 
+
     document.getElementById("popDOA").textContent =
         card.dataset.doa || "-";
+
 
     document.getElementById("popDOD").textContent =
         card.dataset.dod || "-";
 
-    document.getElementById("memberOverlay").style.display =
-        "flex";
+
+    /* Show member information */
+
+    document.getElementById("emptyMemberMessage").style.display =
+        "none";
+
+
+    document.getElementById("memberTable").style.display =
+        "table";
 
 }
 
-
-
 function closeMemberDetails(){
 
-    document.getElementById("memberOverlay").style.display =
+    document.getElementById("popupMemberName").textContent =
+        "Select a Member";
+
+
+    document.getElementById("emptyMemberMessage").style.display =
+        "block";
+
+
+    document.getElementById("memberTable").style.display =
         "none";
+
+
+    document.getElementById("popName").textContent = "";
+    document.getElementById("popMemberId").textContent = "";
+    document.getElementById("popRole").textContent = "";
+    document.getElementById("popGender").textContent = "";
+    document.getElementById("popSpouse").textContent = "";
+    document.getElementById("popParents").textContent = "";
+    document.getElementById("popChildren").textContent = "";
+    document.getElementById("popGeneration").textContent = "";
+    document.getElementById("popContact").textContent = "";
+    document.getElementById("popDOB").textContent = "";
+    document.getElementById("popDOA").textContent = "";
+    document.getElementById("popDOD").textContent = "";
 
 }
 

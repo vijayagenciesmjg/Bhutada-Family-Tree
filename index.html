@@ -80,6 +80,122 @@
          Tree
     ========================================== -->
 
+    <!-- ==========================================
+     Main Application Layout
+========================================== -->
+
+<div id="mainLayout">
+
+    <!-- ==========================================
+         Family Details Panel
+    ========================================== -->
+
+    <aside id="memberPanel">
+
+        <div id="popupHeader">
+
+            <h2 id="popupMemberName">
+                Select a Member
+            </h2>
+
+            <button id="btnClosePopup" type="button">
+                ✕
+            </button>
+
+        </div>
+
+
+        <div id="popupBody">
+
+            <div id="emptyMemberMessage">
+
+                <div class="emptyMemberIcon">
+                    👤
+                </div>
+
+                <h3>Select a Member</h3>
+
+                <p>
+                    Click any member in the family tree
+                    to view their details here.
+                </p>
+
+            </div>
+
+
+            <table id="memberTable">
+
+                <tr>
+                    <td>Name</td>
+                    <td id="popName"></td>
+                </tr>
+
+                <tr>
+                    <td>Member ID</td>
+                    <td id="popMemberId"></td>
+                </tr>
+
+                <tr>
+                    <td>Role</td>
+                    <td id="popRole"></td>
+                </tr>
+
+                <tr>
+                    <td>Gender</td>
+                    <td id="popGender"></td>
+                </tr>
+
+                <tr>
+                    <td>Spouse</td>
+                    <td id="popSpouse"></td>
+                </tr>
+
+                <tr>
+                    <td>Parents</td>
+                    <td id="popParents"></td>
+                </tr>
+
+                <tr>
+                    <td>Children</td>
+                    <td id="popChildren"></td>
+                </tr>
+
+                <tr>
+                    <td>Generation</td>
+                    <td id="popGeneration"></td>
+                </tr>
+
+                <tr>
+                    <td>Contact</td>
+                    <td id="popContact"></td>
+                </tr>
+
+                <tr>
+                    <td>Date of Birth</td>
+                    <td id="popDOB"></td>
+                </tr>
+
+                <tr>
+                    <td>Anniversary</td>
+                    <td id="popDOA"></td>
+                </tr>
+
+                <tr>
+                    <td>Demise</td>
+                    <td id="popDOD"></td>
+                </tr>
+
+            </table>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ==========================================
+         Family Tree
+    ========================================== -->
+
     <main id="treeViewport">
 
         <div id="treeWrapper">
@@ -92,107 +208,7 @@
 
     </main>
 
-
-
-    <!-- ==========================================
-         Member Details Popup
-    ========================================== -->
-
-    <div id="memberOverlay">
-
-        <div id="memberPopup">
-
-            <div id="popupHeader">
-
-                <h2>
-
-                    Member Details
-
-                </h2>
-
-                <button id="btnClosePopup">
-
-                    ✕
-
-                </button>
-
-            </div>
-
-            <div id="popupBody">
-
-                <table id="memberTable">
-
-                    <tr>
-
-                        <td>Name</td>
-
-                        <td id="popName"></td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>Member ID</td>
-
-                        <td id="popMemberId"></td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>Role</td>
-
-                        <td id="popRole"></td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>Generation</td>
-
-                        <td id="popGeneration"></td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>Contact</td>
-
-                        <td id="popContact"></td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>Date of Birth</td>
-
-                        <td id="popDOB"></td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>Anniversary</td>
-
-                        <td id="popDOA"></td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>Demise</td>
-
-                        <td id="popDOD"></td>
-
-                    </tr>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </div>
+</div>
 
 
 
