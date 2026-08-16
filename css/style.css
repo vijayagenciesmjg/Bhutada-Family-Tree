@@ -913,3 +913,132 @@ body{
     padding:1px 2px;
 
 }
+
+/* ==========================================
+   V5.0.3 — Member Details Sections
+========================================== */
+
+#memberDetailsContent{
+    display:none;
+}
+
+
+/* ==========================================
+   Details Section
+========================================== */
+
+.detailsSection{
+
+    margin-bottom:18px;
+
+    border:1px solid #e1e1e1;
+
+    border-radius:8px;
+
+    overflow:hidden;
+
+    background:#ffffff;
+
+}
+
+
+/* ==========================================
+   Section Heading
+========================================== */
+
+.detailsSectionTitle{
+
+    padding:10px 12px;
+
+    background:#f5f7fa;
+
+    border-bottom:1px solid #e1e1e1;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    color:#333;
+
+}
+
+
+/* ==========================================
+   Detail Row
+========================================== */
+
+.detailRow{
+
+    display:grid;
+
+    grid-template-columns:
+        120px
+        minmax(0,1fr);
+
+    gap:12px;
+
+    padding:9px 12px;
+
+    border-bottom:1px solid #eeeeee;
+
+}
+
+
+.detailRow:last-child{
+
+    border-bottom:none;
+
+}
+
+
+/* ==========================================
+   Detail Label
+========================================== */
+
+.detailLabel{
+
+    font-size:13px;
+
+    font-weight:600;
+
+    color:#666;
+
+}
+
+
+/* ==========================================
+   Detail Value
+========================================== */
+
+.detailValue{
+
+    font-size:13px;
+
+    color:#222;
+
+    word-break:break-word;
+
+}
+
+/* ==========================================
+   V5.0.3 — Family Navigation Links
+========================================== */
+
+.familyLink{
+
+    color:#2563eb;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    text-decoration:none;
+
+}
+
+
+.familyLink:hover{
+
+    text-decoration:underline;
+
+}

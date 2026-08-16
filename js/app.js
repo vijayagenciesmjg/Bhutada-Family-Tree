@@ -620,147 +620,32 @@ else{
         ====================================== */
 
         result.addEventListener(
-            "click",
-            function(){
 
-                /*
-                 * We already know which person
-                 * this result represents.
-                 */
+    "click",
 
-                const selectedPerson =
-                    person;
+    function(){
+
+        const memberId =
+            this.dataset.memberId;
 
 
-                /* Store selected person */
+        /* Select the member */
 
-                App.selectedMember =
-                    selectedPerson;
-
-
-                /* Hide search results */
-
-                resultsPanel.innerHTML = "";
-
-                resultsPanel.style.display =
-                    "none";
-
-
-                /* ==================================
-                   Find Person Card
-                ================================== */
-
-                const cards =
-                    document.querySelectorAll(
-                        ".personCard"
-                    );
-
-
-                let selectedCard =
-                    null;
-
-
-                cards.forEach(card => {
-
-                    if(
-                        card.dataset.memberId ===
-                        selectedPerson.memberId
-                    ){
-
-                        selectedCard =
-                            card;
-
-                    }
-
-                });
-
-
-                if(!selectedCard){
-
-                    console.warn(
-                        "Selected member card not found:",
-                        selectedPerson.memberId
-                    );
-
-                    return;
-
-                }
-
-
-                /* ==================================
-                   Remove Previous Selection
-                ================================== */
-
-                document
-                    .querySelectorAll(
-                        ".personCard.selected"
-                    )
-                    .forEach(card => {
-
-                        card.classList.remove(
-                            "selected"
-                        );
-
-                    });
-
-
-                /* ==================================
-                   Select Card
-                ================================== */
-
-                selectedCard.classList.add(
-                    "selected"
-                );
-
-
-                /* ==================================
-                   Relationship Highlight
-                ================================== */
-
-                if(
-                    typeof highlightFamilyContext ===
-                    "function"
-                ){
-
-                    highlightFamilyContext(
-                        selectedPerson
-                    );
-
-                }
-
-
-                /* ==================================
-                   Member Details
-                ================================== */
-
-                if(
-                    typeof showMemberDetails ===
-                    "function"
-                ){
-
-                    showMemberDetails(
-                        selectedCard
-                    );
-
-                }
-
-
-                /* ==================================
-                   Locate Member
-                ================================== */
-
-                selectedCard.scrollIntoView({
-
-                    behavior:"smooth",
-
-                    block:"center",
-
-                    inline:"center"
-
-                });
-
-            }
+        selectMemberById(
+            memberId
         );
+
+
+        /* Hide search results */
+
+        resultsPanel.innerHTML = "";
+
+        resultsPanel.style.display =
+            "none";
+
+    }
+
+);
 
 
         /* ======================================
@@ -783,31 +668,188 @@ else{
 
 }
 
+function selectMemberById(memberId){
+
+    if(!memberId)
+        return;
+
+
+    /* ==========================================
+       Find Person in Family Data
+    ========================================== */
+
+    const person =
+        App.family.find(
+            member =>
+                member.memberId === memberId
+        );
+
+
+    if(!person){
+
+        console.warn(
+            "Member not found:",
+            memberId
+        );
+
+        return;
+
+    }
+
+
+    /* ==========================================
+       Find Rendered Person Card
+    ========================================== */
+
+    const cards =
+        document.querySelectorAll(
+            ".personCard"
+        );
+
+
+    let selectedCard =
+        null;
+
+
+    cards.forEach(card => {
+
+        if(
+            card.dataset.memberId ===
+            memberId
+        ){
+
+            selectedCard =
+                card;
+
+        }
+
+    });
+
+
+    if(!selectedCard){
+
+        console.warn(
+            "Member card not currently rendered:",
+            memberId
+        );
+
+        return;
+
+    }
+
+
+    /* ==========================================
+       Store Selected Member
+    ========================================== */
+
+    App.selectedMember =
+        person;
+
+
+    /* ==========================================
+       Remove Previous Selection
+    ========================================== */
+
+    document
+        .querySelectorAll(
+            ".personCard.selected"
+        )
+        .forEach(card => {
+
+            card.classList.remove(
+                "selected"
+            );
+
+        });
+
+
+    /* ==========================================
+       Select Current Card
+    ========================================== */
+
+    selectedCard.classList.add(
+        "selected"
+    );
+
+
+    /* ==========================================
+       Highlight Family Context
+    ========================================== */
+
+    if(
+        typeof highlightFamilyContext ===
+        "function"
+    ){
+
+        highlightFamilyContext(
+            person
+        );
+
+    }
+
+
+    /* ==========================================
+       Show Member Details
+    ========================================== */
+
+    showMemberDetails(
+        selectedCard
+    );
+
+
+    /* ==========================================
+       Locate Member in Tree
+    ========================================== */
+
+    selectedCard.scrollIntoView({
+
+        behavior:"smooth",
+
+        block:"center",
+
+        inline:"center"
+
+    });
+
+}
+
+
 /* ============================================
    Member Details Popup
 ============================================ */
 
 function showMemberDetails(card){
 
-    document.getElementById("popupMemberName").textContent =
-        card.dataset.name || "Member Details";
+    /* ==========================================
+       Member Name
+    ========================================== */
+
+    document
+        .getElementById("popupMemberName")
+        .textContent =
+            card.dataset.name ||
+            "Member Details";
 
 
-    document.getElementById("popName").textContent =
-        card.dataset.name || "";
+    document
+        .getElementById("popName")
+        .textContent =
+            card.dataset.name || "";
 
 
-    document.getElementById("popMemberId").textContent =
-        card.dataset.memberId || "";
+    /* ==========================================
+       Role
+    ========================================== */
+
+    document
+        .getElementById("popRole")
+        .textContent =
+            card.dataset.role || "-";
 
 
-    document.getElementById("popRole").textContent =
-        card.dataset.role || "";
-
-
-    document.getElementById("popGender").textContent =
-        card.dataset.gender || "";
-
+    /* ==========================================
+       Internal Member Lookup
+    ========================================== */
 
     const memberId =
         card.dataset.memberId || "";
@@ -815,82 +857,287 @@ function showMemberDetails(card){
 
     const person =
         App.family.find(
-            item => item.memberId === memberId
+            item =>
+                item.memberId === memberId
         );
 
 
+    /* ==========================================
+       Spouse
+    ========================================== */
+
     const spouseId =
+
         memberId.endsWith("M")
+
             ? memberId.slice(0, -1) + "S"
+
             : memberId.endsWith("S")
+
             ? memberId.slice(0, -1) + "M"
+
             : "";
 
 
     const spouse =
+
         App.family.find(
-            item => item.memberId === spouseId
+            item =>
+                item.memberId === spouseId
         );
 
 
-    const parentName =
-        person && person.parent
-        ? person.parent.name
-        : "";
+    const spouseElement =
+    document.getElementById("popSpouse");
 
 
-    document.getElementById("popParents").textContent =
-        parentName || "-";
+spouseElement.innerHTML = "";
 
 
-    const childrenNames =
-        person && Array.isArray(person.children)
-        ? person.children.map(
-            child => child.name
-        )
-        : [];
+if(spouse){
+
+    const spouseLink =
+        document.createElement("span");
 
 
-    document.getElementById("popChildren").textContent =
-        childrenNames.length
-            ? childrenNames.join(", ")
-            : "-";
+    spouseLink.className =
+        "familyLink";
 
 
-    document.getElementById("popSpouse").textContent =
-        spouse
-            ? spouse.name
-            : "-";
+    spouseLink.textContent =
+        spouse.name;
 
 
-    document.getElementById("popGeneration").textContent =
-        card.dataset.generation || "";
+    spouseLink.dataset.memberId =
+        spouse.memberId;
 
 
-    document.getElementById("popContact").textContent =
-        card.dataset.contact || "";
+    spouseLink.addEventListener(
+        "click",
+        function(){
+
+            selectMemberById(
+                this.dataset.memberId
+            );
+
+        }
+    );
 
 
-    document.getElementById("popDOB").textContent =
-        card.dataset.dob || "-";
+    spouseElement.appendChild(
+        spouseLink
+    );
+
+}
+else{
+
+    spouseElement.textContent =
+        "-";
+
+}
 
 
-    document.getElementById("popDOA").textContent =
-        card.dataset.doa || "-";
+    /* ==========================================
+       Parents
+    ========================================== */
+
+    const parentsElement =
+    document.getElementById(
+        "popParents"
+    );
 
 
-    document.getElementById("popDOD").textContent =
-        card.dataset.dod || "-";
+parentsElement.innerHTML = "";
 
 
-    /* Show member information */
+if(
+    person &&
+    person.parent
+){
 
-    document.getElementById("emptyMemberMessage").style.display =
-        "none";
+    const parentLink =
+        document.createElement("span");
 
 
-    document.getElementById("memberTable").style.display =
-        "table";
+    parentLink.className =
+        "familyLink";
+
+
+    parentLink.textContent =
+        person.parent.name;
+
+
+    parentLink.dataset.memberId =
+        person.parent.memberId;
+
+
+    parentLink.addEventListener(
+        "click",
+        function(){
+
+            selectMemberById(
+                this.dataset.memberId
+            );
+
+        }
+    );
+
+
+    parentsElement.appendChild(
+        parentLink
+    );
+
+}
+else{
+
+    parentsElement.textContent =
+        "-";
+
+}
+
+
+    /* ==========================================
+       Children
+    ========================================== */
+
+    const childrenElement =
+    document.getElementById(
+        "popChildren"
+    );
+
+
+childrenElement.innerHTML = "";
+
+
+if(
+    person &&
+    Array.isArray(person.children) &&
+    person.children.length > 0
+){
+
+    person.children.forEach(
+        function(child, index){
+
+            const childLink =
+                document.createElement(
+                    "span"
+                );
+
+
+            childLink.className =
+                "familyLink";
+
+
+            childLink.textContent =
+                child.name;
+
+
+            childLink.dataset.memberId =
+                child.memberId;
+
+
+            childLink.addEventListener(
+                "click",
+                function(){
+
+                    selectMemberById(
+                        this.dataset.memberId
+                    );
+
+                }
+            );
+
+
+            childrenElement.appendChild(
+                childLink
+            );
+
+
+            /*
+             * Separate multiple children
+             */
+
+            if(
+                index <
+                person.children.length - 1
+            ){
+
+                childrenElement.appendChild(
+                    document.createTextNode(
+                        ", "
+                    )
+                );
+
+            }
+
+        }
+    );
+
+}
+else{
+
+    childrenElement.textContent =
+        "-";
+
+}
+
+
+    /* ==========================================
+       Contact
+    ========================================== */
+
+    document
+        .getElementById("popContact")
+        .textContent =
+
+            card.dataset.contact || "-";
+
+
+    /* ==========================================
+       Date of Birth
+    ========================================== */
+
+    document
+        .getElementById("popDOB")
+        .textContent =
+
+            card.dataset.dob || "-";
+
+
+    /* ==========================================
+       Anniversary
+    ========================================== */
+
+    document
+        .getElementById("popDOA")
+        .textContent =
+
+            card.dataset.doa || "-";
+
+
+    /* ==========================================
+       Demise
+    ========================================== */
+
+    document
+        .getElementById("popDOD")
+        .textContent =
+
+            card.dataset.dod || "-";
+
+
+    /* ==========================================
+       Show Member Information
+    ========================================== */
+
+    document
+        .getElementById("emptyMemberMessage")
+        .style.display = "none";
+
+
+    document
+        .getElementById("memberDetailsContent")
+        .style.display = "block";
 
 }
 
