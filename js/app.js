@@ -194,13 +194,79 @@ document.addEventListener(
     "keydown",
     function(e){
 
-        if(e.key === "Escape"){
+        if(e.key !== "Escape")
+            return;
 
-            closeMemberDetails();
+
+        /* Close Search Results */
+
+        const resultsPanel =
+            document.getElementById(
+                "searchResults"
+            );
+
+
+        if(resultsPanel){
+
+            resultsPanel.innerHTML = "";
+
+            resultsPanel.style.display =
+                "none";
+
+        }
+
+
+        /* Close Member Details Popup */
+
+        closeMemberDetails();
+
+    }
+);
+
+/* ============================================
+   Search Results — Close on Outside Click
+============================================ */
+
+document.addEventListener(
+
+    "click",
+
+    function(e){
+
+        const searchContainer =
+            document.getElementById(
+                "searchContainer"
+            );
+
+        const resultsPanel =
+            document.getElementById(
+                "searchResults"
+            );
+
+
+        if(
+            !searchContainer ||
+            !resultsPanel
+        ){
+
+            return;
+
+        }
+
+
+        if(
+            !searchContainer.contains(e.target)
+        ){
+
+            resultsPanel.innerHTML = "";
+
+            resultsPanel.style.display =
+                "none";
 
         }
 
     }
+
 );
 }
 
@@ -220,7 +286,6 @@ function resetZoom(){
     updateTreeTransform();
 
 }
-
 
 
 function fitTreeToScreen(){
@@ -278,7 +343,6 @@ function fitTreeToScreen(){
 }
 
 
-
 function updateTreeTransform(){
 
     const viewport = document.getElementById("treeViewport");
@@ -316,80 +380,408 @@ function updateTreeTransform(){
 function searchMember(e){
 
     const keyword =
-
         e.target.value
-
         .trim()
-
         .toLowerCase();
 
-    document
+    const resultsPanel =
+        document.getElementById("searchResults");
 
-        .querySelectorAll(".personCard")
 
-        .forEach(card=>{
+    /* ==========================================
+       Clear Previous Results
+    ========================================== */
 
-            card.classList.remove("highlight");
+    resultsPanel.innerHTML = "";
+
+
+    /* ==========================================
+       Empty Search
+    ========================================== */
+
+    if(keyword === ""){
+
+        resultsPanel.style.display = "none";
+
+        return;
+
+    }
+
+
+    /* ==========================================
+       Find Matching Members
+    ========================================== */
+
+    const matches =
+
+        App.family.filter(person => {
+
+            const name =
+                (person.name || "")
+                .toLowerCase();
+
+            const contact =
+                (person.contact || "")
+                .toLowerCase();
+
+
+            return (
+
+                name.includes(keyword)
+
+                ||
+
+                contact.includes(keyword)
+
+            );
 
         });
 
-    if(keyword==="") return;
 
-    const cards =
+    /* ==========================================
+       No Results
+    ========================================== */
 
-        document.querySelectorAll(".personCard");
+    if(matches.length === 0){
 
-    let found = null;
+        resultsPanel.innerHTML =
 
-    cards.forEach(card=>{
+            `<div class="searchNoResults">
+                No family member found.
+             </div>`;
+
+        resultsPanel.style.display = "block";
+
+        return;
+
+    }
+
+
+    /* ==========================================
+       Create Search Results
+    ========================================== */
+
+    matches.forEach(person => {
+
+        const result =
+            document.createElement("div");
+
+        result.className =
+            "searchResult";
+
+
+        /* ======================================
+           Store Internal Member ID
+        ====================================== */
+
+        result.dataset.memberId =
+            person.memberId || "";
+
+
+        /* ======================================
+           Name
+        ====================================== */
 
         const name =
-    (card.dataset.name || "")
-        .toLowerCase();
+    document.createElement("div");
 
-        const id =
-    (card.dataset.memberId || "")
-        .toLowerCase();
+name.className =
+    "searchResultName";
 
-        const contact =
-    (card.dataset.contact || "");
 
-        if(
+const memberName =
+    person.name || "Unknown";
 
-            name.includes(keyword)
 
-            ||
+const lowerName =
+    memberName.toLowerCase();
 
-            id.includes(keyword)
 
-            ||
+const matchIndex =
+    lowerName.indexOf(keyword);
 
-            contact.includes(keyword)
 
-        ){
+if(matchIndex >= 0){
 
-            found = card;
+    const before =
+        memberName.substring(
+            0,
+            matchIndex
+        );
 
-        }
 
-    });
+    const match =
+        memberName.substring(
+            matchIndex,
+            matchIndex + keyword.length
+        );
 
-    if(!found) return;
 
-    found.classList.add("highlight");
+    const after =
+        memberName.substring(
+            matchIndex + keyword.length
+        );
 
-    found.scrollIntoView({
 
-        behavior:"smooth",
+    name.innerHTML =
 
-        block:"center",
+        before +
 
-        inline:"center"
+        "<span class='searchMatch'>" +
 
-    });
+        match +
+
+        "</span>" +
+
+        after;
+
+}
+else{
+
+    name.textContent =
+        memberName;
 
 }
 
+        /* ======================================
+           Contact
+        ====================================== */
+
+        const contact =
+            document.createElement("div");
+
+        contact.className =
+            "searchResultContact";
+
+        contact.textContent =
+            person.contact ||
+            "No contact number";
+
+
+        /* ======================================
+           Relationship
+        ====================================== */
+
+        const relationship =
+            document.createElement("div");
+
+        relationship.className =
+            "searchResultRelationship";
+
+
+        let relationshipText =
+            "Family Member";
+
+
+        if(person.spouse){
+
+            if(person.gender === "Female"){
+
+                relationshipText =
+                    "Wife of " +
+                    (person.spouse.name || "");
+
+            }
+            else{
+
+                relationshipText =
+                    "Husband of " +
+                    (person.spouse.name || "");
+
+            }
+
+        }
+        else if(person.parent){
+
+            relationshipText =
+                "Child of " +
+                (person.parent.name || "");
+
+        }
+
+
+        relationship.textContent =
+            relationshipText;
+
+
+        /* ======================================
+           Build Result
+        ====================================== */
+
+        result.appendChild(name);
+
+        result.appendChild(contact);
+
+        result.appendChild(relationship);
+
+
+        /* ======================================
+           CLICK RESULT
+        ====================================== */
+
+        result.addEventListener(
+            "click",
+            function(){
+
+                /*
+                 * We already know which person
+                 * this result represents.
+                 */
+
+                const selectedPerson =
+                    person;
+
+
+                /* Store selected person */
+
+                App.selectedMember =
+                    selectedPerson;
+
+
+                /* Hide search results */
+
+                resultsPanel.innerHTML = "";
+
+                resultsPanel.style.display =
+                    "none";
+
+
+                /* ==================================
+                   Find Person Card
+                ================================== */
+
+                const cards =
+                    document.querySelectorAll(
+                        ".personCard"
+                    );
+
+
+                let selectedCard =
+                    null;
+
+
+                cards.forEach(card => {
+
+                    if(
+                        card.dataset.memberId ===
+                        selectedPerson.memberId
+                    ){
+
+                        selectedCard =
+                            card;
+
+                    }
+
+                });
+
+
+                if(!selectedCard){
+
+                    console.warn(
+                        "Selected member card not found:",
+                        selectedPerson.memberId
+                    );
+
+                    return;
+
+                }
+
+
+                /* ==================================
+                   Remove Previous Selection
+                ================================== */
+
+                document
+                    .querySelectorAll(
+                        ".personCard.selected"
+                    )
+                    .forEach(card => {
+
+                        card.classList.remove(
+                            "selected"
+                        );
+
+                    });
+
+
+                /* ==================================
+                   Select Card
+                ================================== */
+
+                selectedCard.classList.add(
+                    "selected"
+                );
+
+
+                /* ==================================
+                   Relationship Highlight
+                ================================== */
+
+                if(
+                    typeof highlightFamilyContext ===
+                    "function"
+                ){
+
+                    highlightFamilyContext(
+                        selectedPerson
+                    );
+
+                }
+
+
+                /* ==================================
+                   Member Details
+                ================================== */
+
+                if(
+                    typeof showMemberDetails ===
+                    "function"
+                ){
+
+                    showMemberDetails(
+                        selectedCard
+                    );
+
+                }
+
+
+                /* ==================================
+                   Locate Member
+                ================================== */
+
+                selectedCard.scrollIntoView({
+
+                    behavior:"smooth",
+
+                    block:"center",
+
+                    inline:"center"
+
+                });
+
+            }
+        );
+
+
+        /* ======================================
+           Add Result
+        ====================================== */
+
+        resultsPanel.appendChild(
+            result
+        );
+
+    });
+
+
+    /* ==========================================
+       Show Results
+    ========================================== */
+
+    resultsPanel.style.display =
+        "block";
+
+}
 
 /* ============================================
    Member Details Popup
