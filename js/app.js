@@ -803,7 +803,7 @@ function selectMemberById(memberId){
 
     selectedCard.scrollIntoView({
 
-        behavior:"smooth",
+        behavior:"instant",
 
         block:"center",
 
@@ -811,8 +811,488 @@ function selectMemberById(memberId){
 
     });
 
+    requestAnimationFrame(() => {
+
+    focusFamilyCamera(person);
+
+});
 }
 
+/* ============================================
+   Focus Family Members
+   Maximum 2 Levels Up
+   Maximum 2 Levels Down
+============================================ */
+
+function getFocusedFamilyMembers(person){
+
+    if(!person)
+        return [];
+
+
+    const focusedMembers = [];
+
+
+    /* ==========================================
+       Grandparent — 2 Levels Up
+    ========================================== */
+
+    if(
+        person.parent &&
+        person.parent.parent
+    ){
+
+        focusedMembers.push(
+            person.parent.parent
+        );
+
+    }
+
+
+    /* ==========================================
+       Parent — 1 Level Up
+    ========================================== */
+
+    if(person.parent){
+
+        focusedMembers.push(
+            person.parent
+        );
+
+    }
+
+
+    /* ==========================================
+       Selected Member
+    ========================================== */
+
+    focusedMembers.push(
+        person
+    );
+
+
+    /* ==========================================
+       Children — 1 Level Down
+    ========================================== */
+
+    if(
+        Array.isArray(person.children)
+    ){
+
+        person.children.forEach(
+            child => {
+
+                focusedMembers.push(
+                    child
+                );
+
+            }
+        );
+
+    }
+
+
+    /* ==========================================
+       Grandchildren — 2 Levels Down
+    ========================================== */
+
+    if(
+        Array.isArray(person.children)
+    ){
+
+        person.children.forEach(
+            child => {
+
+                if(
+                    Array.isArray(
+                        child.children
+                    )
+                ){
+
+                    child.children.forEach(
+                        grandchild => {
+
+                            focusedMembers.push(
+                                grandchild
+                            );
+
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ==========================================
+       Remove Duplicate Members
+    ========================================== */
+
+    return [
+        ...new Map(
+            focusedMembers.map(
+                member => [
+                    member.memberId,
+                    member
+                ]
+            )
+        ).values()
+    ];
+
+}
+
+/* ============================================
+   Calculate Focus Family Bounds
+============================================ */
+
+function getFocusedFamilyBounds(members){
+
+    if(
+        !Array.isArray(members) ||
+        members.length === 0
+    ){
+
+        return null;
+
+    }
+
+
+    const cards = [];
+
+
+    /* ==========================================
+       Find Rendered Cards
+    ========================================== */
+
+    members.forEach(member => {
+
+        if(!member || !member.memberId)
+            return;
+
+
+        const card =
+            document.querySelector(
+                `.personCard[data-member-id="${member.memberId}"]`
+            );
+
+
+        if(card){
+
+            cards.push(card);
+
+        }
+
+    });
+
+
+    if(cards.length === 0)
+        return null;
+
+
+    /* ==========================================
+       Calculate Combined Bounds
+    ========================================== */
+
+    let left = Infinity;
+    let top = Infinity;
+    let right = -Infinity;
+    let bottom = -Infinity;
+
+
+    cards.forEach(card => {
+
+        const rect =
+            card.getBoundingClientRect();
+
+
+        left =
+            Math.min(
+                left,
+                rect.left
+            );
+
+
+        top =
+            Math.min(
+                top,
+                rect.top
+            );
+
+
+        right =
+            Math.max(
+                right,
+                rect.right
+            );
+
+
+        bottom =
+            Math.max(
+                bottom,
+                rect.bottom
+            );
+
+    });
+
+
+    return {
+
+        left,
+        top,
+        right,
+        bottom,
+
+        width:
+            right - left,
+
+        height:
+            bottom - top
+
+    };
+
+}
+
+/* ============================================
+   Calculate Focus Zoom
+============================================ */
+
+function calculateFocusedZoom(bounds){
+
+    if(!bounds)
+        return App.zoom;
+
+
+    const viewport =
+        document.getElementById(
+            "treeViewport"
+        );
+
+
+    if(!viewport)
+        return App.zoom;
+
+
+    const padding = 80;
+
+
+    const availableWidth =
+        viewport.clientWidth -
+        padding;
+
+
+    const availableHeight =
+        viewport.clientHeight -
+        padding;
+
+
+    if(
+        availableWidth <= 0 ||
+        availableHeight <= 0
+    ){
+
+        return App.zoom;
+
+    }
+
+
+    const widthZoom =
+        availableWidth /
+        bounds.width;
+
+
+    const heightZoom =
+        availableHeight /
+        bounds.height;
+
+
+    let zoom =
+        Math.min(
+            widthZoom,
+            heightZoom
+        );
+
+
+    /* ==========================================
+       Keep Zoom Within Application Limits
+    ========================================== */
+
+    zoom =
+        Math.max(
+            App.minZoom,
+            zoom
+        );
+
+
+    zoom =
+        Math.min(
+            App.maxZoom,
+            zoom
+        );
+
+
+    return zoom;
+
+}
+
+/* ============================================
+   Apply Focused Family Camera
+============================================ */
+
+/* ============================================
+   Simple Focus Zoom
+============================================ */
+
+/* ============================================
+   Simple Focus Zoom + Accurate Centering
+============================================ */
+
+function focusFamilyCamera(person){
+
+    if(!person)
+        return;
+
+
+    const viewport =
+        document.getElementById(
+            "treeViewport"
+        );
+
+
+    if(!viewport)
+        return;
+
+
+    const selectedCard =
+        document.querySelector(
+            `.personCard[data-member-id="${person.memberId}"]`
+        );
+
+
+    if(!selectedCard)
+        return;
+
+
+    /* ==========================================
+       Desired Focus Zoom
+    ========================================== */
+
+    const focusZoom = 0.80;
+
+
+    App.zoom =
+        Math.min(
+            App.maxZoom,
+            focusZoom
+        );
+
+
+    /* ==========================================
+       Apply Zoom First
+    ========================================== */
+
+    updateTreeTransform();
+
+
+    /* ==========================================
+       Wait Until Browser Applies Zoom
+    ========================================== */
+
+    requestAnimationFrame(() => {
+
+
+        const viewportRect =
+            viewport.getBoundingClientRect();
+
+
+        const cardRect =
+            selectedCard.getBoundingClientRect();
+
+
+        /* ======================================
+        Actual Tree Viewport Center
+        ====================================== */
+
+const viewportLeft =
+    viewportRect.left;
+
+const viewportTop =
+    viewportRect.top;
+
+const viewportWidth =
+    viewportRect.width;
+
+const viewportHeight =
+    viewportRect.height;
+
+
+/* Center of the ACTUAL Tree viewport */
+
+const viewportCenterX =
+    viewportLeft +
+    (
+        viewportWidth / 2
+    );
+
+const viewportCenterY =
+    viewportTop +
+    (
+        viewportHeight / 2
+    );
+
+
+        /* ======================================
+           Selected Card Center
+        ====================================== */
+
+        const cardCenterX =
+            cardRect.left +
+            (
+                cardRect.width / 2
+            );
+
+
+        const cardCenterY =
+            cardRect.top +
+            (
+                cardRect.height / 2
+            );
+
+
+        /* ======================================
+           Difference
+        ====================================== */
+
+        const moveX =
+            viewportCenterX -
+            cardCenterX;
+
+
+        const moveY =
+            viewportCenterY -
+            cardCenterY;
+
+
+        /* ======================================
+           Apply Correct Pan
+        ====================================== */
+
+        App.panX += moveX;
+
+        App.panY += moveY;
+
+
+        /* ======================================
+           Apply Final Transform
+        ====================================== */
+
+        updateTreeTransform();
+
+    });
+
+}
 
 /* ============================================
    Member Details Popup
